@@ -22,8 +22,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -169,12 +167,9 @@ public class CopilotChatPanel extends JPanel {
         // Input field
         inputField = new JTextField();
         inputField.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
-        inputField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER && !isProcessing) {
-                    sendMessage();
-                }
+        inputField.addActionListener(e -> {
+            if (!isProcessing) {
+                sendMessage();
             }
         });
 

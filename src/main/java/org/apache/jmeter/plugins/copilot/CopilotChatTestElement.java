@@ -16,13 +16,13 @@
  */
 package org.apache.jmeter.plugins.copilot;
 
-import org.apache.jmeter.testelement.AbstractTestElement;
+import org.apache.jmeter.config.ConfigTestElement;
 
 /**
- * Test element that holds configuration for the Copilot Chat visualizer.
- * This element stores settings like the selected AI model and chat history.
+ * Test element that holds configuration for the Copilot Chat config element.
+ * This element stores settings like the selected AI model.
  */
-public class CopilotChatTestElement extends AbstractTestElement {
+public class CopilotChatTestElement extends ConfigTestElement {
 
     private static final long serialVersionUID = 1L;
 
