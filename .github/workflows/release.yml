@@ -1,0 +1,88 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'Release version (e.g., 1.0.0)'
+        required: true
+        type: string
+      developmentVersion:
+        description: 'Next development version (e.g., 1.0.1-SNAPSHOT)'
+        required: true
+        type: string
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Configure Git
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Install Copilot SDK
+      run: |
+        # Clone and install Copilot SDK (until it's published to Maven Central)
+        git clone https://github.com/github/copilot-sdk.git /tmp/copilot-sdk
+        cd /tmp/copilot-sdk/java
+        mvn install -DskipTests -q
+
+    - name: Prepare Release
+      run: |
+        mvn -B release:prepare \
+          -DreleaseVersion=${{ inputs.releaseVersion }} \
+          -DdevelopmentVersion=${{ inputs.developmentVersion }} \
+          -DtagNameFormat=v@{project.version} \
+          -DpushChanges=true \
+          -Darguments="-DskipTests"
+
+    - name: Perform Release
+      run: |
+        mvn -B release:perform \
+          -Darguments="-DskipTests"
+
+    - name: Get artifact path
+      id: artifact
+      run: |
+        ARTIFACT_PATH=$(find target/checkout/target -name "jmeter-copilot-plugin-${{ inputs.releaseVersion }}.jar" -type f | head -1)
+        echo "path=$ARTIFACT_PATH" >> $GITHUB_OUTPUT
+        echo "name=jmeter-copilot-plugin-${{ inputs.releaseVersion }}.jar" >> $GITHUB_OUTPUT
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{ inputs.releaseVersion }}
+        name: Release v${{ inputs.releaseVersion }}
+        body: |
+          ## JMeter Copilot Plugin v${{ inputs.releaseVersion }}
+          
+          ### Installation
+          
+          1. Download `jmeter-copilot-plugin-${{ inputs.releaseVersion }}.jar` from the assets below
+          2. Copy the JAR file to your JMeter `lib/ext` directory
+          3. Restart JMeter
+          
+          ### Requirements
+          
+          - Java 17 or later
+          - Apache JMeter 5.6.3 or later
+          - GitHub Copilot CLI installed and authenticated
+        files: ${{ steps.artifact.outputs.path }}
+        generate_release_notes: true

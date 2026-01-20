@@ -1,5 +1,7 @@
 # JMeter Copilot Plugin
 
+[![Build](https://github.com/brunoborges/jmeter-copilot/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/brunoborges/jmeter-copilot/actions/workflows/build.yml)
+
 An Apache JMeter plugin that provides a GitHub Copilot Chat experience for generating JMeter test plans through natural language conversation.
 
 ## Features
@@ -11,12 +13,34 @@ An Apache JMeter plugin that provides a GitHub Copilot Chat experience for gener
 
 ## Requirements
 
-- Java 21 or later
+- Java 17 or later
 - Apache JMeter 5.6.3 or later
 - GitHub Copilot CLI installed and authenticated
 - [Copilot SDK for Java](https://github.com/github/copilot-sdk) (version 0.1.0)
 
-## Building
+## Installation
+
+### Quick Install (Recommended)
+
+Download the latest release and install it to your JMeter installation with a single command:
+
+```bash
+curl -sL $(curl -s https://api.github.com/repos/brunoborges/jmeter-copilot/releases/latest | grep "browser_download_url.*jar" | cut -d '"' -f 4) -o $JMETER_HOME/lib/ext/jmeter-copilot-plugin.jar
+```
+
+Or, if you prefer to specify the JMeter path directly:
+
+```bash
+curl -sL $(curl -s https://api.github.com/repos/brunoborges/jmeter-copilot/releases/latest | grep "browser_download_url.*jar" | cut -d '"' -f 4) -o /path/to/jmeter/lib/ext/jmeter-copilot-plugin.jar
+```
+
+### Manual Installation
+
+1. Download the latest JAR from [GitHub Releases](https://github.com/brunoborges/jmeter-copilot/releases/latest)
+2. Copy the JAR file to your JMeter `lib/ext` directory
+3. Restart JMeter
+
+## Building from Source
 
 ### Prerequisites
 

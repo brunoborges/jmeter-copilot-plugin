@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.apache.jmeter.plugins</groupId>
@@ -12,10 +12,18 @@
     <name>JMeter Copilot Plugin</name>
     <description>JMeter plugin that integrates GitHub Copilot Chat for generating test plans</description>
 
+    <scm>
+        <connection>scm:git:https://github.com/brunoborges/jmeter-copilot.git</connection>
+        <developerConnection>scm:git:https://github.com/brunoborges/jmeter-copilot.git</developerConnection>
+        <url>https://github.com/brunoborges/jmeter-copilot</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <properties>
-        <maven.compiler.release>21</maven.compiler.release>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jmeter.version>5.6.3</jmeter.version>
+        <jmeter.home>${project.basedir}/../apache-jmeter-5.6.3</jmeter.home>
     </properties>
 
     <dependencies>
@@ -38,22 +46,35 @@
             <version>${jmeter.version}</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <!-- GitHub Copilot SDK -->
         <dependency>
             <groupId>com.github.copilot</groupId>
             <artifactId>copilot-sdk</artifactId>
             <version>0.1.0</version>
         </dependency>
-        
+
+        <!-- Markdown rendering -->
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+            <version>0.24.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark-ext-gfm-tables</artifactId>
+            <version>0.24.0</version>
+        </dependency>
+
         <!-- Google Auto Service for META-INF/services generation -->
+
         <dependency>
             <groupId>com.google.auto.service</groupId>
             <artifactId>auto-service-annotations</artifactId>
             <version>1.1.1</version>
             <optional>true</optional>
         </dependency>
-        
+
         <!-- SLF4J for logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -67,6 +88,24 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.14.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.20.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.20.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.27.6</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -133,23 +172,13 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-to-jmeter</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar"
-                                      todir="${project.basedir}/../apache-jmeter-5.6.3/lib/ext"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>3.3.1</version>
+                <configuration>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <releaseProfiles>release</releaseProfiles>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -157,12 +186,17 @@
     <profiles>
         <profile>
             <id>install-to-jmeter</id>
+            <activation>
+                <file>
+                    <exists>${jmeter.home}/bin/jmeter</exists>
+                </file>
+            </activation>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
-                        <version>3.1.0</version>
+                        <version>3.2.0</version>
                         <executions>
                             <execution>
                                 <id>copy-to-jmeter</id>
@@ -172,8 +206,9 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <copy file="${project.build.directory}/${project.artifactId}-${project.version}.jar"
-                                              todir="${jmeter.home}/lib/ext"/>
+                                        <copy
+                                            file="${project.build.directory}/${project.artifactId}-${project.version}.jar"
+                                            todir="${jmeter.home}/lib/ext" />
                                     </target>
                                 </configuration>
                             </execution>

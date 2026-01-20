@@ -1,0 +1,1 @@
+org.apache.jmeter.copilot.ToggleCopilotPanelAction
