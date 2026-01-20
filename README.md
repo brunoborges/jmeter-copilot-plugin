@@ -1,6 +1,6 @@
 # JMeter Copilot Plugin
 
-[![Build](https://github.com/brunoborges/jmeter-copilot/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/brunoborges/jmeter-copilot/actions/workflows/build.yml)
+[![Build](https://github.com/brunoborges/jmeter-copilot-chat/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/brunoborges/jmeter-copilot-chat/actions/workflows/build.yml)
 
 An Apache JMeter plugin that provides a GitHub Copilot Chat experience for generating JMeter test plans through natural language conversation.
 
@@ -16,7 +16,7 @@ An Apache JMeter plugin that provides a GitHub Copilot Chat experience for gener
 - Java 17 or later
 - Apache JMeter 5.6.3 or later
 - GitHub Copilot CLI installed and authenticated
-- [Copilot SDK for Java](https://github.com/github/copilot-sdk) (version 0.1.0)
+- [Copilot SDK for Java](https://github.com/brunoborges/copilot-sdk/tree/main/java) (version 0.1.0)
 
 ## Installation
 
