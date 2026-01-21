@@ -3,9 +3,7 @@
 [![Build](https://github.com/brunoborges/jmeter-copilot-plugin/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/brunoborges/jmeter-copilot-plugin/actions/workflows/build.yml)
 [![Java 17+](https://img.shields.io/badge/Java-17%2B-blue?logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![Apache JMeter](https://img.shields.io/badge/JMeter-5.6.3%2B-green?logo=apache&logoColor=white)](https://jmeter.apache.org/)
-[![License: MIT](https://img.shields.io/github/license/brunoborges/jmeter-copilot-plugin)](https://github.com/brunoborges/jmeter-copilot-plugin/blob/main/LICENSE)
-
-An Apache JMeter plugin that provides a GitHub Copilot Chat experience for generating JMeter test plans through natural language conversation.
+[![License: Apache](https://img.shields.io/github/license/brunoborges/jmeter-copilot-plugin)](https://github.com/brunoborges/jmeter-copilot-plugin/blob/main/LICENSE)
 
 ## Features
 
@@ -14,6 +12,11 @@ An Apache JMeter plugin that provides a GitHub Copilot Chat experience for gener
 - 💬 **Chat Interface**: Interactive chat panel integrated directly into JMeter
 - 🔧 **Multiple Element Types**: Generate HTTP requests, thread groups, assertions, timers, controllers, and more
 - 🔄 **Seamless Integration**: Generated elements are automatically added to your test plan
+
+### Screenshot
+<img width="1226" alt="Generating a test plan and loading into JMeter" src="https://github.com/user-attachments/assets/4da3c2e6-2d20-4460-87be-a81020ed1a94" />
+
+> 📸 See more screenshots in the [screenshots folder](screenshots/).
 
 ## Requirements
 

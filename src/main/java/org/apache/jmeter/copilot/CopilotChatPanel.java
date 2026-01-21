@@ -85,6 +85,7 @@ public class CopilotChatPanel extends JPanel {
 
     // State
     private final AtomicBoolean isProcessing = new AtomicBoolean(false);
+    private final AtomicBoolean isAborted = new AtomicBoolean(false);
     private final StringBuilder streamingContent = new StringBuilder();
     private String lastGeneratedXml = null;
     private String lastJmxFilePath = null;
@@ -382,6 +383,10 @@ public class CopilotChatPanel extends JPanel {
         // Set up streaming handler
         chatService.setStreamingHandler(chunk -> {
             SwingUtilities.invokeLater(() -> {
+                // Ignore chunks if generation was aborted
+                if (isAborted.get()) {
+                    return;
+                }
                 streamingContent.append(chunk);
                 updateStreamingDisplay();
             });
@@ -390,6 +395,10 @@ public class CopilotChatPanel extends JPanel {
         // Set up complete message handler
         chatService.setMessageHandler(message -> {
             SwingUtilities.invokeLater(() -> {
+                // Ignore message if generation was aborted
+                if (isAborted.get()) {
+                    return;
+                }
                 streamingContent.setLength(0);
                 isProcessing.set(false);
                 updateUIState();
@@ -460,6 +469,7 @@ public class CopilotChatPanel extends JPanel {
         }
 
         isProcessing.set(true);
+        isAborted.set(false); // Reset abort flag for new message
         streamingContent.setLength(0);
         lastGeneratedXml = null;
         lastJmxFilePath = null;
@@ -490,12 +500,15 @@ public class CopilotChatPanel extends JPanel {
 
     @SuppressWarnings("FutureReturnValueIgnored")
     private void abortGeneration() {
+        // Set abort flag immediately to stop processing incoming chunks
+        isAborted.set(true);
+        isProcessing.set(false);
+        streamingContent.setLength(0);
+        updateUIState();
+        
         chatService.abort()
             .thenRun(() -> SwingUtilities.invokeLater(() -> {
-                isProcessing.set(false);
-                streamingContent.setLength(0);
-                updateUIState();
-                addSystemMessage("Generation aborted.");
+                addSystemMessage("Generation stopped.");
             }));
     }
 

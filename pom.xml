@@ -186,7 +186,7 @@
             <id>install-to-jmeter</id>
             <activation>
                 <file>
-                    <exists>${jmeter.home}/bin/jmeter</exists>
+                    <exists>${jmeter.home}/lib/ext/ApacheJMeter_core.jar</exists>
                 </file>
             </activation>
             <build>
