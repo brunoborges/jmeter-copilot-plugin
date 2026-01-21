@@ -52,9 +52,10 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultEditorKit;
 
 import org.apache.jmeter.gui.GuiPackage;
-import org.apache.jmeter.gui.action.ActionRouter;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.collections.HashTree;
+
+import com.github.copilot.sdk.CopilotModel;
 
 /**
  * The main Copilot Chat panel that integrates into JMeter's UI.
@@ -80,7 +81,7 @@ public class CopilotChatPanel extends JPanel {
     private JButton showXmlButton;
     private JLabel statusLabel;
     private JScrollPane messagesScrollPane;
-    private JComboBox<String> modelSelector;
+    private JComboBox<CopilotModel> modelSelector;
 
     // State
     private final AtomicBoolean isProcessing = new AtomicBoolean(false);
@@ -149,11 +150,11 @@ public class CopilotChatPanel extends JPanel {
         JLabel modelLabel = new JLabel("Model:");
         centerPanel.add(modelLabel);
 
-        modelSelector = new JComboBox<>(CopilotChatService.AVAILABLE_MODELS);
+        modelSelector = new JComboBox<>(CopilotChatService.getAvailableModels());
         modelSelector.setSelectedItem(chatService.getModel());
         modelSelector.setToolTipText("Select AI model");
         modelSelector.addActionListener(e -> {
-            String selectedModel = (String) modelSelector.getSelectedItem();
+            CopilotModel selectedModel = (CopilotModel) modelSelector.getSelectedItem();
             if (selectedModel != null) {
                 chatService.setModel(selectedModel);
             }

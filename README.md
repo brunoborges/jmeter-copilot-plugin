@@ -67,20 +67,10 @@ Invoke-WebRequest -Uri $jarUrl -OutFile "C:\path\to\jmeter\lib\ext\jmeter-copilo
 
 ## Building from Source
 
-### Prerequisites
-
-1. Install the Copilot SDK locally (until it's published to Maven Central):
+Build the plugin:
 
 ```bash
-cd /path/to/copilot-sdk/java
-mvn install
-```
-
-2. Build the plugin:
-
-```bash
-cd copilot-extension
-mvn clean package
+mvn clean verify
 ```
 
 ### Installing to JMeter
@@ -100,9 +90,9 @@ mvn install -Pinstall-to-jmeter -Djmeter.home=/path/to/jmeter
 ## Usage
 
 1. Start JMeter
-2. Add a new **Listener** → **Copilot Chat** to your test plan
+2. Click on the menu **Tools** → **Copilot Chat** to open it
 3. Describe the test you want to create in the chat input
-4. Copilot will generate the appropriate JMeter elements and add them to your test plan
+4. Copilot will generate the appropriate JMeter test plan
 
 ### Example Prompts
 

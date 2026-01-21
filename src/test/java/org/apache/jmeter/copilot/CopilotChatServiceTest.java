@@ -39,6 +39,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.github.copilot.sdk.CopilotClient;
+import com.github.copilot.sdk.CopilotModel;
 import com.github.copilot.sdk.CopilotSession;
 import com.github.copilot.sdk.events.AssistantMessageEvent;
 import com.github.copilot.sdk.json.MessageOptions;
@@ -214,23 +215,23 @@ class CopilotChatServiceTest {
     @Test
     @DisplayName("should have default model set")
     void shouldHaveDefaultModelSet() {
-        assertThat(service.getModel()).isEqualTo("claude-sonnet-4");
+        assertThat(service.getModel()).isEqualTo(CopilotModel.CLAUDE_SONNET_4_5);
     }
 
     @Test
     @DisplayName("should allow setting custom model")
     void shouldAllowSettingCustomModel() {
-        service.setModel("gpt-4.1");
+        service.setModel(CopilotModel.GPT_4_1);
 
-        assertThat(service.getModel()).isEqualTo("gpt-4.1");
+        assertThat(service.getModel()).isEqualTo(CopilotModel.GPT_4_1);
     }
 
     @Test
     @DisplayName("should provide list of available models")
     void shouldProvideListOfAvailableModels() {
-        assertThat(CopilotChatService.AVAILABLE_MODELS)
+        assertThat(CopilotChatService.getAvailableModels())
             .isNotNull()
             .isNotEmpty()
-            .contains("claude-sonnet-4", "gpt-4.1", "claude-4-opus", "gpt-4.1-mini");
+            .containsExactly(CopilotModel.values());
     }
 }
