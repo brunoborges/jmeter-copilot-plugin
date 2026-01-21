@@ -35,10 +35,10 @@ Using `JMETER_HOME` environment variable:
 curl -sL $(curl -s https://api.github.com/repos/brunoborges/jmeter-copilot-plugin/releases/latest | grep "browser_download_url.*jar" | cut -d '"' -f 4) -o $JMETER_HOME/lib/ext/jmeter-copilot-plugin.jar
 ```
 
-Or specify the JMeter path directly:
+Or save to current directory:
 
 ```bash
-curl -sL $(curl -s https://api.github.com/repos/brunoborges/jmeter-copilot-plugin/releases/latest | grep "browser_download_url.*jar" | cut -d '"' -f 4) -o /path/to/jmeter/lib/ext/jmeter-copilot-plugin.jar
+curl -sL $(curl -s https://api.github.com/repos/brunoborges/jmeter-copilot-plugin/releases/latest | grep "browser_download_url.*jar" | cut -d '"' -f 4) -o jmeter-copilot-plugin.jar
 ```
 
 #### Windows (PowerShell)
