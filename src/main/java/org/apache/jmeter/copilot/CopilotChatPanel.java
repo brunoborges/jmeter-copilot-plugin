@@ -413,9 +413,23 @@ public class CopilotChatPanel extends JPanel {
                     // Check if the response references a .jmx file
                     xmlParser.extractJmxFilePath(content).ifPresent(path -> {
                         lastJmxFilePath = path;
-                        lastGeneratedXml = null;
                         loadXmlButton.setEnabled(true);
-                        showXmlButton.setEnabled(false);
+                        // Try to read the file content so "Show XML" button works
+                        try {
+                            java.io.File file = new java.io.File(path);
+                            if (file.exists() && file.canRead()) {
+                                lastGeneratedXml = java.nio.file.Files.readString(
+                                    file.toPath(), java.nio.charset.StandardCharsets.UTF_8);
+                                showXmlButton.setEnabled(true);
+                            } else {
+                                lastGeneratedXml = null;
+                                showXmlButton.setEnabled(false);
+                            }
+                        } catch (Exception e) {
+                            LOG.log(Level.WARNING, "Could not read JMX file for preview: " + path, e);
+                            lastGeneratedXml = null;
+                            showXmlButton.setEnabled(false);
+                        }
                     });
                 }
             });
@@ -534,9 +548,44 @@ public class CopilotChatPanel extends JPanel {
     }
 
     private void toggleXmlVisibility() {
+        // Check if we have XML from a file reference (not inline in messages)
+        // In this case, show it in a dialog since it's not in the conversation
+        if (lastJmxFilePath != null && lastGeneratedXml != null) {
+            showXmlInDialog();
+            return;
+        }
+
         boolean expanded = messageRenderer.toggleXmlExpanded();
         showXmlButton.setText(expanded ? "Hide XML" : "Show XML");
         refreshMessages();
+    }
+
+    private void showXmlInDialog() {
+        if (lastGeneratedXml == null) {
+            JOptionPane.showMessageDialog(this,
+                "No XML available to display.",
+                "Show XML",
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Create a text area with the XML content
+        JTextArea xmlArea = new JTextArea(lastGeneratedXml);
+        xmlArea.setEditable(false);
+        xmlArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        xmlArea.setCaretPosition(0);
+
+        JScrollPane scrollPane = new JScrollPane(xmlArea);
+        scrollPane.setPreferredSize(new Dimension(700, 500));
+
+        String title = lastJmxFilePath != null
+            ? "XML Content: " + lastJmxFilePath
+            : "Generated XML";
+
+        JOptionPane.showMessageDialog(this,
+            scrollPane,
+            title,
+            JOptionPane.PLAIN_MESSAGE);
     }
 
     private void loadGeneratedXml() {

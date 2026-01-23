@@ -18,12 +18,16 @@
 package org.apache.jmeter.copilot;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.util.logging.Logger;
 
 import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 
+import org.apache.jmeter.exceptions.IllegalUserActionException;
 import org.apache.jmeter.gui.GuiPackage;
+import org.apache.jmeter.gui.action.ActionNames;
+import org.apache.jmeter.gui.action.Load;
 import org.apache.jorphan.collections.HashTree;
 
 /**
@@ -163,14 +167,16 @@ public class CopilotPanelManager {
         try {
             GuiPackage guiPackage = GuiPackage.getInstance();
             if (guiPackage != null) {
-                // Clear the current test plan
-                guiPackage.getTreeModel().clearTestPlan();
-
-                // Add the new test plan
-                guiPackage.addSubTree(tree);
+                // Use JMeter's Load.insertLoadedTree which properly handles
+                // GUI component initialization and tree insertion
+                ActionEvent event = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, ActionNames.OPEN);
+                Load.insertLoadedTree(event.getID(), tree);
 
                 LOG.info("Test plan loaded from Copilot");
             }
+        } catch (IllegalUserActionException e) {
+            LOG.severe("Failed to load test plan: " + e.getMessage());
+            throw new RuntimeException("Failed to load test plan: " + e.getMessage(), e);
         } catch (Exception e) {
             LOG.severe("Failed to load test plan: " + e.getMessage());
             throw new RuntimeException("Failed to load test plan", e);
