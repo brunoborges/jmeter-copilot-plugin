@@ -27,10 +27,10 @@ import java.util.logging.Logger;
 
 import com.github.copilot.sdk.CopilotClient;
 import com.github.copilot.sdk.CopilotSession;
-import com.github.copilot.sdk.events.AbstractSessionEvent;
-import com.github.copilot.sdk.events.AssistantMessageDeltaEvent;
-import com.github.copilot.sdk.events.AssistantMessageEvent;
-import com.github.copilot.sdk.events.SessionErrorEvent;
+import com.github.copilot.sdk.generated.AssistantMessageDeltaEvent;
+import com.github.copilot.sdk.generated.AssistantMessageEvent;
+import com.github.copilot.sdk.generated.SessionErrorEvent;
+import com.github.copilot.sdk.generated.SessionEvent;
 import com.github.copilot.sdk.json.MessageOptions;
 import com.github.copilot.sdk.json.SessionConfig;
 
@@ -116,6 +116,7 @@ public class CopilotChatService implements AutoCloseable {
         SessionConfig config = new SessionConfig()
             .setStreaming(true)
             .setModel(model)
+            .setOnPermissionRequest(com.github.copilot.sdk.json.PermissionHandler.APPROVE_ALL)
             .setSystemMessage(new com.github.copilot.sdk.json.SystemMessageConfig()
                 .setMode(com.github.copilot.sdk.SystemMessageMode.APPEND)
                 .setContent(JMETER_SYSTEM_PROMPT));
@@ -166,15 +167,15 @@ public class CopilotChatService implements AutoCloseable {
         }
     }
 
-    private void handleEvent(AbstractSessionEvent event) {
+    private void handleEvent(SessionEvent event) {
         try {
             if (event instanceof AssistantMessageDeltaEvent deltaEvent) {
-                String delta = deltaEvent.getData().getDeltaContent();
+                String delta = deltaEvent.getData().deltaContent();
                 if (delta != null && streamingHandler != null) {
                     streamingHandler.accept(delta);
                 }
             } else if (event instanceof AssistantMessageEvent messageEvent) {
-                String content = messageEvent.getData().getContent();
+                String content = messageEvent.getData().content();
                 if (content != null && !content.isBlank()) {
                     ChatMessage message = new ChatMessage(ChatMessage.Role.ASSISTANT, content);
                     conversationHistory.addMessage(message);
@@ -184,7 +185,7 @@ public class CopilotChatService implements AutoCloseable {
                 }
             } else if (event instanceof SessionErrorEvent errorEvent) {
                 LOG.log(Level.WARNING, "Session error: {0}",
-                    errorEvent.getData() != null ? errorEvent.getData().getMessage() : "Unknown error");
+                    errorEvent.getData() != null ? errorEvent.getData().message() : "Unknown error");
             }
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Error handling event", e);
@@ -228,7 +229,7 @@ public class CopilotChatService implements AutoCloseable {
         return session.sendAndWait(new MessageOptions().setPrompt(prompt))
             .thenApply(response -> {
                 if (response != null && response.getData() != null) {
-                    return response.getData().getContent();
+                    return response.getData().content();
                 }
                 return null;
             });
